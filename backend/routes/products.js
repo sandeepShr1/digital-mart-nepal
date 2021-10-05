@@ -4,7 +4,7 @@ const fetchuser = require('../middleware/fetchuser');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 
-// Route 1 Get all notes using: GET "/api/auth/fetchallproducts". Login required!
+// Route 1 Get all products using: GET "/api/auth/fetchallproducts". Login required!
 router.get('/fetchallproducts', fetchuser, async (req, res) => {
     try {
         const products = await Product.find({ user: req.user.id })
@@ -16,7 +16,7 @@ router.get('/fetchallproducts', fetchuser, async (req, res) => {
     }
 })
 
-// Route 2 Post notes using: POST "/api/auth/addproducts". Login required!
+// Route 2 Post products using: POST "/api/auth/addproducts". Login required!
 router.post('/addproducts', fetchuser, [
     body('title', 'Enter a valid title!').isLength({ min: 5 }),
     body('description', 'Enter a valid description!').isLength({ min: 5 }),
@@ -38,6 +38,53 @@ router.post('/addproducts', fetchuser, [
         res.json(saveProduct);
     }
     catch (error) {
+        console.log(error.message);
+        res.status(500).send("Something went wrong!")
+    }
+})
+
+// Route 3 UPDATE products using: put "/api/products/updateproduct". Login required
+router.put('/updateproduct/:id', fetchuser, async (req, res) => {
+    try {
+        const { title, description, price, tag } = req.body;
+
+        // create a new product object
+        const newProduct = {};
+        if (title) { newProduct.title = title };
+        if (description) { newProduct.description = description };
+        if (price) { newProduct.price = price };
+        if (tag) { newProduct.tag = tag };
+
+        // Find the product that to be updated and update it
+        let product = await Product.findById(req.params.id);
+        if (!product) { return res.status(404).send("Not found") };
+
+        if (product.user.toString() !== req.user.id) {
+            return res.status(401).send("Not Permitted!");
+        }
+
+        product = await Product.findByIdAndUpdate(req.params.id, { $set: newProduct }, { new: true })
+        res.json({ product });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send("Something went wrong!")
+    }
+})
+
+// Route 4 DELETE a product using: DELETE "/api/products/deleteproduct" Login required
+router.delete('/deleteproduct/:id', fetchuser, async (req,res) => {
+    try {
+        // Find the product that to be deleted and delete it
+        let product = await Product.findById(req.params.id);
+        if (!product) { return res.status(404).send("Not found") };
+
+        if (product.user.toString() !== req.user.id) {
+            return res.status(401).send("Not Permitted!");
+        }
+
+        product = await Product.findByIdAndDelete(req.params.id)
+        res.json({ "Success": "Success! Product has been deleted.","product": product });
+    } catch (error) {
         console.log(error.message);
         res.status(500).send("Something went wrong!")
     }
