@@ -9,7 +9,7 @@ router.get('/fetchallproducts', fetchuser, async (req, res) => {
     try {
         const products = await Product.find({ user: req.user.id })
         res.json(products)
-
+        return;
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Something went wrong!")

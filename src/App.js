@@ -8,32 +8,47 @@ import {
   BrowserRouter as Router,
   Switch
 } from "react-router-dom";
-import Admin from './components/Admin/Admin';
+import ProductState from './context/products/ProductState';
+// import Admin from './components/Admin/Admin';
+import { useState } from 'react';
+import Alert from '../src/components/Alert'
 
 
 function App() {
+  const [alert, setAlert] = useState(null);
+
+  const showAlert = (message, type) => {
+    setAlert({
+      msg: message,
+      type: type
+    })
+
+    setTimeout(() => {
+      setAlert(null);
+    }, 1500);
+  };
   return (
     <>
-      <Router>
-        <Navbar title="DigitalMartNepal" />
-        <Switch>
-          <Router exact path="/">
-            <Products />
-          </Router>
-          <Router exact path="/about">
-            <About />
-          </Router>
-          <Router exact path="/shop">
-            <Shop />
-          </Router>
-          <Router exact path="/products">
-            <Products />
-          </Router>
-          <Router exact path="/admin">
+      <ProductState >
+        <Router>
+          <Navbar title="DigitalMartNepal" />
+          <Alert alert={alert} />
+          <Switch>
+            <Router exact path="/">
+              <Products showAlert={showAlert}/>
+            </Router>
+            <Router exact path="/about">
+              <About />
+            </Router>
+            <Router exact path="/shop">
+              <Shop />
+            </Router>
+            {/* <Router exact path="/admin">
             <Admin />
-          </Router>
-        </Switch>
-      </Router>
+          </Router> */}
+          </Switch>
+        </Router>
+      </ProductState>
     </>
   );
 }

@@ -1,18 +1,22 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, {useContext} from 'react';
+import productContext from '../context/products/productContext';
+
 
 const Product = (props) => {
-    let { title, description, imgUrl, price, category } = props;
+    const context = useContext(productContext);
+    const { deleteProduct } = context;
+    let {product, updateProduct} = props;
     return (
         <>
             <div className="card my-3 shadow p-3 mb-4 bg-white rounded">
-                <img src={imgUrl} className="card-img-top" alt="img" />
+                {/* <img src={imgUrl} className="card-img-top" alt="img" /> */}
                 <div className="card-body">
-                    <h5 className="card-title">{title}..</h5>
-                    <p className="card-text">{description}...</p>
-                    <p className="card-text"><b>Price:</b>${price}</p>
-                    <p className="card-text"><b>Category:</b> {category}</p>
-                    <Link to="#" className="btn btn-primary">Buy</Link>
+                    <h5 className="card-title">{product.title}..</h5>
+                    <p className="card-text">{product.description}...</p>
+                    <p className="card-text"><b>Price:</b>${product.price}</p>
+                    <p className="card-text"><b>Category:</b> {product.tag}</p>
+                    <i className="fas fa-trash mx -2" onClick ={()=> {deleteProduct(product._id); props.showAlert("Deleted successfully", "success")}}></i>
+                    <i className="fas fa-edit mx-3" onClick={()=> {updateProduct(product)}}></i>
                 </div>
             </div>
         </>
