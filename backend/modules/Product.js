@@ -14,6 +14,12 @@ const ProductsSchema = new Schema({
         type: String,
         required: true
     },
+
+    articleImage: {
+        type: String,
+        required: true
+    },
+
     price: {
         type: Number,
         required: true

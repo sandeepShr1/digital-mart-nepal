@@ -8,7 +8,7 @@ const ProductState = (props) => {
     const [loading, setLoading] = useState(false)
     const [products, setProducts] = useState(productInitial);
 
-    const callLoading =() => {
+    const callLoading = () => {
         setLoading(true)
         setTimeout(() => {
             setLoading(false)
@@ -33,18 +33,19 @@ const ProductState = (props) => {
     }
 
     // add products
-    const addProducts = async (title, description, tag, price) => {
+    const addProducts = async (formData) => {
         // API call
         const url = `${host}/api/products/addproducts`
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 "auth-token": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjE1YzA2YzlmOTJjMmNlODQ1OTI1ZGQyIn0sImlhdCI6MTYzNDU0NzgzNn0.953uRQZ8WgSuU2PvBPPW5H0gyRIEB-9lJ_3IQgRoXH0'
             },
-            body: JSON.stringify({ title, description, tag, price })
+            body: formData
+            // body: JSON.stringify({ title, description, tag, price})
         });
         const product = await response.json();
+        console.log(product)
         setProducts(products.concat(product));
         callLoading();
     }
