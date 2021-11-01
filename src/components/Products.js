@@ -6,7 +6,7 @@ import AddProducts from './AddProducts';
 
 const Products = (props) => {
     const context = useContext(productContext);
-    const { products, getAllProducts, editProduct,loading } = context;
+    const { products, getAllProducts, editProduct, loading } = context;
 
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const Products = (props) => {
         console.log("Updating the Product...", product);
         editProduct(product.id, product.etitle, product.edescription, product.etag, product.eprice);
         refClose.current.click();
-        
+
         props.showAlert("Updated successfully", "success")
     }
 
@@ -37,7 +37,7 @@ const Products = (props) => {
 
     return (
         <div className="container my-2">
-            <AddProducts showAlert = {props.showAlert}/>
+            <AddProducts showAlert={props.showAlert} />
             <button ref={ref} type="button" className="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Launch demo modal
             </button>
@@ -77,17 +77,27 @@ const Products = (props) => {
                 </div>
             </div>
 
-            <div className="row my-3">
+            <div className=" row my-3 table-responsive">
                 <h2>Products</h2>
                 {loading && <Spinner />}
                 <div className="container">
                     {products.length === 0 && "No products to display"}
                 </div>
-                {!loading && products.map((product) => {
-                    return <div className="col-md-4" key={product._id} >
-                        <Product product={product} updateProduct={updateProduct} showAlert ={props.showAlert} />
-                    </div>
-                })}
+                <table className=" table table-secondary table-bordered">
+                    <thead className="table-dark">
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Tag</th>
+                            <th scope="col">Edit/Delete</th>
+                        </tr>
+                    </thead>
+                    {!loading && products.map((product) => {
+                        return <tbody key={product._id} >
+                            <Product product={product} updateProduct={updateProduct} showAlert={props.showAlert} />
+                        </tbody>
+                    })}
+                </table>
             </div>
         </div>
     )

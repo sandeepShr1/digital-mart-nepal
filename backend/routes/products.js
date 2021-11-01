@@ -8,7 +8,7 @@ const { body, validationResult } = require('express-validator');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'images');
+        cb(null, 'uploads');
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname);
@@ -57,10 +57,10 @@ router.post('/addproducts', fetchuser, upload.single('articleImage'), [
 })
 
 // Route 3 UPDATE products using: put "/api/products/updateproduct". Login required
-router.put('/updateproduct/:id', fetchuser, upload.single('articleImage'), async (req, res) => {
+router.put('/updateproduct/:id', fetchuser, async (req, res) => {
     try {
         const { title, description, price, tag } = req.body;
-        const {articleImage} = req.file.filename
+        // const {articleImage} = req.file.filename
 
         // create a new product object
         const newProduct = {};
@@ -68,7 +68,7 @@ router.put('/updateproduct/:id', fetchuser, upload.single('articleImage'), async
         if (description) { newProduct.description = description };
         if (price) { newProduct.price = price };
         if (tag) { newProduct.tag = tag };
-        if (articleImage) { newProduct.articleImage = articleImage };
+        // if (articleImage) { newProduct.articleImage = articleImage };
 
         // Find the product that to be updated and update it
         let product = await Product.findById(req.params.id);

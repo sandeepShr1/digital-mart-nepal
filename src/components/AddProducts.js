@@ -36,7 +36,7 @@ const AddProducts = (props) => {
             <h1>Add Products</h1>
             <form onSubmit={handleSubmit} encType='multipart/form-data'>
                 <div className="mb-3">
-                    <label htmlFor="file" className="form-label">Add a image</label>
+                    <label htmlFor="file" className="form-label">Add an image</label>
                     <input
                         className="form-control"
                         type="file"
