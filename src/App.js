@@ -6,12 +6,15 @@ import Shop from './components/Shop';
 
 import {
   BrowserRouter as Router,
+  Route,
   Switch
 } from "react-router-dom";
 import ProductState from './context/products/ProductState';
 // import Admin from './components/Admin/Admin';
 import { useState } from 'react';
 import Alert from '../src/components/Alert'
+import Login from './components/Login';
+import Register from './components/Register';
 
 
 function App() {
@@ -34,18 +37,21 @@ function App() {
           <Navbar title="DigitalMartNepal" />
           <Alert alert={alert} />
           <Switch>
-            <Router exact path="/">
-              <Products showAlert={showAlert}/>
-            </Router>
-            <Router exact path="/about">
+            <Route exact path="/">
+              <Products showAlert={showAlert} />
+            </Route>
+            <Route exact path="/about">
               <About />
-            </Router>
-            <Router exact path="/shop">
+            </Route>
+            <Route exact path="/shop">
               <Shop />
-            </Router>
-            {/* <Router exact path="/admin">
-            <Admin />
-          </Router> */}
+            </Route>
+            <Route exact path="/login">
+            <Login showAlert={showAlert} />
+            </Route>
+            <Route exact path="/register">
+            <Register showAlert={showAlert} />
+            </Route>
           </Switch>
         </Router>
       </ProductState>

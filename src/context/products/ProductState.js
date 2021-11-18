@@ -12,7 +12,7 @@ const ProductState = (props) => {
         setLoading(true)
         setTimeout(() => {
             setLoading(false)
-        }, 1000);
+        }, 1500);
     }
 
     // Fetch all products
@@ -24,7 +24,7 @@ const ProductState = (props) => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                "auth-token": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjE1YzA2YzlmOTJjMmNlODQ1OTI1ZGQyIn0sImlhdCI6MTYzNDU0NzgzNn0.953uRQZ8WgSuU2PvBPPW5H0gyRIEB-9lJ_3IQgRoXH0'
+                "auth-token": localStorage.getItem('token')
             },
         });
         const json = await response.json();
@@ -39,7 +39,7 @@ const ProductState = (props) => {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                "auth-token": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjE1YzA2YzlmOTJjMmNlODQ1OTI1ZGQyIn0sImlhdCI6MTYzNDU0NzgzNn0.953uRQZ8WgSuU2PvBPPW5H0gyRIEB-9lJ_3IQgRoXH0'
+                "auth-token": localStorage.getItem('token')
             },
             body: formData
             // body: JSON.stringify({ title, description, tag, price})
@@ -57,7 +57,7 @@ const ProductState = (props) => {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                "auth-token": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjE1YzA2YzlmOTJjMmNlODQ1OTI1ZGQyIn0sImlhdCI6MTYzNDU0NzgzNn0.953uRQZ8WgSuU2PvBPPW5H0gyRIEB-9lJ_3IQgRoXH0'
+                "auth-token": localStorage.getItem('token')
             },
         });
         const json = await response.json();
@@ -75,7 +75,7 @@ const ProductState = (props) => {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                "auth-token": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjE1YzA2YzlmOTJjMmNlODQ1OTI1ZGQyIn0sImlhdCI6MTYzNDU0NzgzNn0.953uRQZ8WgSuU2PvBPPW5H0gyRIEB-9lJ_3IQgRoXH0'
+                "auth-token": localStorage.getItem('token')
             },
             body: JSON.stringify({ title, description, tag, price })
         });

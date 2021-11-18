@@ -7,7 +7,7 @@ var jwt = require('jsonwebtoken');
 var fetchuser = require('../middleware/fetchuser');
 require('dotenv').config()
 
-const JWT_SECRET = "Mart@1999"
+const JWT_SECRET = "Mart@1999";
 
 //Router 1 to create user using: POST "/api/auth/createuser" . Doesn't required auth
 router.post('/createuser', [
@@ -17,15 +17,16 @@ router.post('/createuser', [
 
 ], async (req, res) => {
     // Finds the validation errors in this request and wraps them in an object with handy functions
+    let success = false
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({ success, errors: errors.array() });
     }
     try {
         // Check whether user exist already!
         let user = await User.findOne({ email: req.body.email });
         if (user) {
-            return res.status(400).json({ error: "User already exist!" });
+            return res.status(400).json({success,  error: "User already exist!" });
         }
         const salt = await bcrypt.genSalt(10);
         secPass = await bcrypt.hash(req.body.password, salt);
@@ -42,7 +43,8 @@ router.post('/createuser', [
             }
         }
         const authToken = jwt.sign(data, JWT_SECRET);
-        res.json(authToken)
+        success = true;
+        res.json({success, authToken})
     }
     catch (error) {
         console.log(error.message);
@@ -55,21 +57,22 @@ router.post('/login', [
     body('password', 'Password must be at least 6!').isLength({ min: 5 }),
     body('email', 'Enter a valid email!').isEmail()
 ], async (req, res) => {
+    let success= false
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({ success, errors: errors.array() });
     }
 
     const { email, password } = req.body;
     try {
         let user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ error: "Enter valid email" });
+            return res.status(400).json({ success, error: "Enter valid email" });
         }
 
         const comparePassword = await bcrypt.compare(password, user.password);
         if (!comparePassword) {
-            return res.status(400).json({ error: "Enter valid email/password" })
+            return res.status(400).json({ success, error: "Enter valid email/password" })
         }
 
         const data = {
@@ -78,7 +81,8 @@ router.post('/login', [
             }
         }
         const authToken = jwt.sign(data, JWT_SECRET);
-        res.json(authToken);
+        success = true
+        res.json({success, authToken});
 
     } catch (error) {
         console.log(error.message);

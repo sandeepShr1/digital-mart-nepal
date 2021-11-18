@@ -3,17 +3,24 @@ import Spinner from '../container/Spinner';
 import Product from './Product';
 import productContext from '../context/products/productContext';
 import AddProducts from './AddProducts';
+import { useHistory } from 'react-router-dom';
 
 const Products = (props) => {
     const context = useContext(productContext);
     const { products, getAllProducts, editProduct, loading } = context;
-
+    const history = useHistory();
 
     useEffect(() => {
-        getAllProducts();
-
+        if (localStorage.getItem('token')) {
+            getAllProducts();
+        }
+        else {
+            props.showAlert("Please login first", "warning")
+            history.push("/login")
+        }
         // eslint-disable-next-line
     }, [])
+
     const ref = useRef(null)
     const refClose = useRef(null)
     const [product, setProduct] = useState({ id: "", etitle: "", edescription: "", etag: "", eprice: 0 });
