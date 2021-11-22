@@ -5,6 +5,7 @@ const User = require('../modules/User');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 var fetchuser = require('../middleware/fetchuser');
+const isAdmin = require('../middleware/isAdmin');
 require('dotenv').config()
 
 const JWT_SECRET = "Mart@1999";
@@ -26,7 +27,7 @@ router.post('/createuser', [
         // Check whether user exist already!
         let user = await User.findOne({ email: req.body.email });
         if (user) {
-            return res.status(400).json({success,  error: "User already exist!" });
+            return res.status(400).json({ success, error: "User already exist!" });
         }
         const salt = await bcrypt.genSalt(10);
         secPass = await bcrypt.hash(req.body.password, salt);
@@ -36,6 +37,7 @@ router.post('/createuser', [
             name: req.body.name,
             email: req.body.email,
             password: secPass,
+            isAdmin: req.body.isAdmin
         })
         const data = {
             user: {
@@ -44,7 +46,7 @@ router.post('/createuser', [
         }
         const authToken = jwt.sign(data, JWT_SECRET);
         success = true;
-        res.json({success, authToken})
+        res.json({ success, authToken })
     }
     catch (error) {
         console.log(error.message);
@@ -57,7 +59,7 @@ router.post('/login', [
     body('password', 'Password must be at least 6!').isLength({ min: 5 }),
     body('email', 'Enter a valid email!').isEmail()
 ], async (req, res) => {
-    let success= false
+    let success = false
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ success, errors: errors.array() });
@@ -77,12 +79,23 @@ router.post('/login', [
 
         const data = {
             user: {
-                id: user.id
+                id: user.id,
+                isAdmin: user.isAdmin
             }
         }
-        const authToken = jwt.sign(data, JWT_SECRET);
-        success = true
-        res.json({success, authToken});
+        if (data.user.isAdmin === true) {
+            console.log(data.user.isAdmin)
+            const authToken = jwt.sign(data, JWT_SECRET);
+            success = true
+            let isAdmin = true
+            res.json({ success, authToken, isAdmin });
+
+        } else {
+            const authToken = jwt.sign(data, JWT_SECRET);
+            success = true
+            let isAdmin = false
+            res.json({ success, authToken, isAdmin });
+        }
 
     } catch (error) {
         console.log(error.message);

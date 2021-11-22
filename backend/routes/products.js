@@ -1,9 +1,10 @@
 const express = require('express');
 const Product = require('../modules/Product')
 const fetchuser = require('../middleware/fetchuser');
+const isAdmin = require('../middleware/isAdmin')
 const router = express.Router();
 const multer = require('multer');
-const path = require("path");  
+const path = require("path");
 const { body, validationResult } = require('express-validator');
 
 const storage = multer.diskStorage({
@@ -18,9 +19,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Route 1 Get all products using: GET "/api/auth/fetchallproducts". Login required!
-router.get('/fetchallproducts', fetchuser, async (req, res) => {
+router.get('/fetchallproducts', isAdmin, async (req, res) => {
     try {
-        const products = await Product.find({ user: req.user.id })
+        const products = await Product.find({})
         res.json(products)
         return;
     } catch (error) {
@@ -30,7 +31,7 @@ router.get('/fetchallproducts', fetchuser, async (req, res) => {
 })
 
 // Route 2 Post products using: POST "/api/auth/addproducts". Login required!
-router.post('/addproducts', fetchuser, upload.single('articleImage'), [
+router.post('/addproducts', isAdmin, upload.single('articleImage'), [
     body('title', 'Enter a valid title!').isLength({ min: 5 }),
     body('description', 'Enter a valid description!').isLength({ min: 5 }),
     body('price', 'Enter a valid price!').isLength({ min: 1 })
@@ -46,9 +47,11 @@ router.post('/addproducts', fetchuser, upload.single('articleImage'), [
         const products = new Product({
             title, description, price, tag, user: req.user.id, articleImage: req.file.filename
         })
-        const saveProduct = await products.save();
+        if (req.user.isAdmin) {
+            const saveProduct = await products.save();
 
-        res.json(saveProduct);
+            res.json(saveProduct);
+        }
     }
     catch (error) {
         console.log(error.message);
@@ -57,7 +60,7 @@ router.post('/addproducts', fetchuser, upload.single('articleImage'), [
 })
 
 // Route 3 UPDATE products using: put "/api/products/updateproduct". Login required
-router.put('/updateproduct/:id', fetchuser, async (req, res) => {
+router.put('/updateproduct/:id', isAdmin, async (req, res) => {
     try {
         const { title, description, price, tag } = req.body;
         // const {articleImage} = req.file.filename
@@ -74,12 +77,14 @@ router.put('/updateproduct/:id', fetchuser, async (req, res) => {
         let product = await Product.findById(req.params.id);
         if (!product) { return res.status(404).send("Not found") };
 
-        if (product.user.toString() !== req.user.id) {
-            return res.status(401).send("Not Permitted!");
+        // if (product.user.toString() !== req.user.id) {
+        //     return res.status(401).send("Not Permitted!");
+        // }
+        if (req.user.isAdmin) {
+            product = await Product.findByIdAndUpdate(req.params.id, { $set: newProduct }, { new: true })
+            res.json({ product });
         }
 
-        product = await Product.findByIdAndUpdate(req.params.id, { $set: newProduct }, { new: true })
-        res.json({ product });
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Something went wrong!")
@@ -87,7 +92,7 @@ router.put('/updateproduct/:id', fetchuser, async (req, res) => {
 })
 
 // Route 4 DELETE a product using: DELETE "/api/products/deleteproduct" Login required
-router.delete('/deleteproduct/:id', fetchuser, async (req, res) => {
+router.delete('/deleteproduct/:id', isAdmin, async (req, res) => {
     try {
         // Find the product that to be deleted and delete it
         let product = await Product.findById(req.params.id);
@@ -96,9 +101,10 @@ router.delete('/deleteproduct/:id', fetchuser, async (req, res) => {
         if (product.user.toString() !== req.user.id) {
             return res.status(401).send("Not Permitted!");
         }
-
-        product = await Product.findByIdAndDelete(req.params.id)
-        res.json({ "Success": "Success! Product has been deleted.", "product": product });
+        if (req.user.isAdmin) {
+            product = await Product.findByIdAndDelete(req.params.id)
+            res.json({ "Success": "Success! Product has been deleted.", "product": product });
+        }
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Something went wrong!")
