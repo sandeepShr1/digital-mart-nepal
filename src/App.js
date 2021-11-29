@@ -15,6 +15,7 @@ import { useState } from 'react';
 import Alert from '../src/components/Alert'
 import Login from './components/Login';
 import Register from './components/Register';
+import Users from './components/User/Users';
 
 
 function App() {
@@ -42,6 +43,9 @@ function App() {
             </Route>
             <Route exact path="/about">
               <About />
+            </Route>
+            <Route exact path="/user">
+              <Users showAlert={showAlert} />
             </Route>
             <Route exact path="/shop">
               <Shop />

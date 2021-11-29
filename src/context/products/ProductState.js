@@ -4,15 +4,51 @@ import productContext from './productContext';
 const ProductState = (props) => {
     const host = "http://localhost:5000"
     const productInitial = []
+    const UserInitial = []
 
     const [loading, setLoading] = useState(false)
     const [products, setProducts] = useState(productInitial);
+    const [users, setUsers] = useState(UserInitial);
 
     const callLoading = () => {
         setLoading(true)
         setTimeout(() => {
             setLoading(false)
-        }, 1500);
+        }, 1000);
+    }
+
+    // Add user
+    const addUsers = async (name, email, password) => {
+        const url = `${host}/api/auth/createuser`
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email, password })
+        });
+        const user = await response.json();
+        console.log(user)
+        setUsers(users.concat(user));
+        callLoading();
+    }
+
+    // Fetch all users
+    const getAllUsers = async () => {
+        setLoading(true)
+        // API call
+        const url = `${host}/api/auth/fetchallusers`
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                "auth-token": localStorage.getItem('token')
+            },
+        });
+        const json = await response.json();
+        setUsers(json)
+        setLoading(false);
+        
     }
 
     // Fetch all products
@@ -99,7 +135,7 @@ const ProductState = (props) => {
     }
 
     return (
-        <productContext.Provider value={{ products, getAllProducts, addProducts, deleteProduct, editProduct, loading }}>
+        <productContext.Provider value={{ products, users, getAllProducts, getAllUsers, addProducts, deleteProduct, editProduct, addUsers, loading }}>
             {props.children}
         </productContext.Provider>
     )

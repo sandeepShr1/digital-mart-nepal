@@ -83,9 +83,10 @@ const Products = (props) => {
                     </div>
                 </div>
             </div>
-
+            
             <div className=" row my-3 table-responsive">
                 <h2>Products</h2>
+                
                 {loading && <Spinner />}
                 <div className="container">
                     {products.length === 0 && "No products to display"}

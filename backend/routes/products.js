@@ -25,7 +25,6 @@ router.get('/fetchallproducts', isAdmin, async (req, res) => {
         res.json(products)
         return;
     } catch (error) {
-        console.log(error.message);
         res.status(500).send("Something went wrong!")
     }
 })
@@ -54,7 +53,6 @@ router.post('/addproducts', isAdmin, upload.single('articleImage'), [
         }
     }
     catch (error) {
-        console.log(error.message);
         res.status(500).send("Something went wrong!")
     }
 })
@@ -86,7 +84,6 @@ router.put('/updateproduct/:id', isAdmin, async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
         res.status(500).send("Something went wrong!")
     }
 })
@@ -106,7 +103,6 @@ router.delete('/deleteproduct/:id', isAdmin, async (req, res) => {
             res.json({ "Success": "Success! Product has been deleted.", "product": product });
         }
     } catch (error) {
-        console.log(error.message);
         res.status(500).send("Something went wrong!")
     }
 })

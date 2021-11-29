@@ -120,4 +120,21 @@ router.get('/getuser', fetchuser, async (req, res) => {
     }
 })
 
+// Route 4 Get all users using: GET "/api/auth/fetchallusers". Login required!
+router.get('/fetchallusers', fetchuser, async (req, res) => {
+    if (!req.user.isAdmin) {
+        return res.status(500).send("You are permitted!");
+    }
+        try {
+            const users = await User.find({}).select("-password")
+            res.json(users)
+            console.log(users)
+            return
+
+        } catch (error) {
+            console.log(error.message);
+            res.status(500).send("Something went wrong!")
+        }
+})
+
 module.exports = router;
