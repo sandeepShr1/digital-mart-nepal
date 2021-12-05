@@ -14,16 +14,17 @@ const ProductState = (props) => {
         setLoading(true)
         setTimeout(() => {
             setLoading(false)
-        }, 1000);
+        }, 2000);
     }
 
     // Add user
     const addUsers = async (name, email, password) => {
-        const url = `${host}/api/auth/createuser`
+        const url = `${host}/api/auth/adduser`
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                "auth-token": localStorage.getItem('token')
             },
             body: JSON.stringify({ name, email, password })
         });
@@ -48,8 +49,10 @@ const ProductState = (props) => {
         const json = await response.json();
         setUsers(json)
         setLoading(false);
-        
+
     }
+
+
 
     // Fetch all products
     const getAllProducts = async () => {
@@ -102,6 +105,23 @@ const ProductState = (props) => {
         setProducts(newProducts);
         callLoading();
     }
+    // delete user
+    const deleteUser = async (id) => {
+        // API call
+        const url = `${host}/api/auth/deleteuser/${id}`
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                "auth-token": localStorage.getItem('token')
+            }
+        });
+        const json = await response.json();
+        console.log(json)
+        const newUsers = users.filter((user) => { return user._id !== id });
+        setProducts(newUsers);
+        callLoading();
+    }
 
     // update product
     const editProduct = async (id, title, description, tag, price) => {
@@ -134,8 +154,40 @@ const ProductState = (props) => {
         callLoading();
     }
 
+
+    // update User
+    const editUser = async (id, name, email, isAdmin) => {
+        // API call
+        const url = `${host}/api/auth/edituser/${id}`
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                "auth-token": localStorage.getItem('token')
+            },
+            body: JSON.stringify({ name, email, isAdmin })
+        });
+        const json = await response.json();
+        console.log(json)
+
+        let newUser = JSON.parse(JSON.stringify(users))
+        // Logic
+        for (let index = 0; index < newUser.length; index++) {
+            const element = newUser[index];
+            if (element._id === id) {
+                newUser[index].name = name;
+                newUser[index].email = email;
+                newUser[index].isAdmin = isAdmin;
+                break;
+            }
+        }
+        setProducts(newUser);
+        callLoading();
+    }
+
+
     return (
-        <productContext.Provider value={{ products, users, getAllProducts, getAllUsers, addProducts, deleteProduct, editProduct, addUsers, loading }}>
+        <productContext.Provider value={{ products, users, deleteUser, editUser, getAllProducts, getAllUsers, addProducts, deleteProduct, editProduct, addUsers, loading }}>
             {props.children}
         </productContext.Provider>
     )

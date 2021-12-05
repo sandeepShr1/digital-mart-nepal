@@ -1,11 +1,11 @@
-import React from 'react';
-// import productContext from '../../context/products/productContext';
+import React, {useContext} from 'react';
+import productContext from '../../context/products/productContext';
 
 
 const User = (props) => {
-    // const context = useContext(productContext);
-    // const { deleteProduct } = context;
-    let { user } = props;
+    const context = useContext(productContext);
+    const { deleteUser } = context;
+    let { user, updateUser } = props;
 
     let Role = user.isAdmin;
     if(user.isAdmin === true){
@@ -19,8 +19,8 @@ const User = (props) => {
             <td>{user.email}</td>
             <td>{Role}</td>
             <td>
-                <i className="fas fa-edit mx-3" ></i>
-                <i className="fas fa-trash mx -2"></i>
+                <i className="fas fa-edit mx-3" onClick ={() => {updateUser(user._id)}} ></i>
+                <i className="fas fa-trash mx -2" onClick={() => { deleteUser(user._id); props.showAlert("User Deleted successfully", "success") }}></i>
             </td>
         </tr>
 

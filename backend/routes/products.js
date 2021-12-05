@@ -95,7 +95,7 @@ router.delete('/deleteproduct/:id', isAdmin, async (req, res) => {
         let product = await Product.findById(req.params.id);
         if (!product) { return res.status(404).send("Not found") };
 
-        if (product.user.toString() !== req.user.id) {
+        if (!req.user.isAdmin) {
             return res.status(401).send("Not Permitted!");
         }
         if (req.user.isAdmin) {
